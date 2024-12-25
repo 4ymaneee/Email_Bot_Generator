@@ -1,8 +1,7 @@
+import os
+import json
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
-import json
-import os
-
 
 class ModernEmailGenerator:
     def __init__(self, root):
@@ -146,9 +145,9 @@ class ModernEmailGenerator:
 
     def update_status(self, message, status_type="info"):
         color_map = {
-            "success": "green",
-            "error": "red",
-            "warning": "orange",
+            "success": "#00ff00",
+            "error": "#FF0000",
+            "warning": "#FFA500",
             "info": "blue"
         }
         self.status_label.configure(text=message, text_color=color_map.get(status_type, "blue"))
@@ -160,8 +159,7 @@ class ModernEmailGenerator:
                     self.hosts = json.load(f)
         except Exception:
             self.hosts = ["gmail.com", "yahoo.com", "hotmail.com"]
-            self.update_status(self.translate("error_saving").format("Failed to load hosts. Using defaults."),
-                               "warning")
+            self.update_status(self.translate("error_saving").format("Failed to load hosts. Using defaults."), "warning")
 
     def save_hosts(self):
         try:
@@ -193,6 +191,18 @@ class ModernEmailGenerator:
             return
 
         try:
+            # Ensure "Emails Generated" directory exists
+            output_dir = "Emails Generated"
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+
+            # Check for existing files and find the next available file number
+            existing_files = os.listdir(output_dir)
+            existing_files = [f for f in existing_files if f.endswith('.txt')]
+            file_number = len(existing_files) + 1
+            file_name = f"Emails_Combination_{file_number}.txt"
+            file_path = os.path.join(output_dir, file_name)
+
             with open(self.filename, 'r') as f:
                 names = f.readlines()
 
@@ -220,10 +230,10 @@ class ModernEmailGenerator:
             if invalid_lines:
                 self.update_status(self.translate("invalid_format") + ",".join(invalid_lines), "warning")
             else:
-                self.update_status(self.translate("generated_emails").format(len(all_emails), "emails.txt"), "success")
+                self.update_status(self.translate("generated_emails").format(len(all_emails), file_name), "success")
 
-                # Save emails to file
-                with open('emails.txt', 'w') as f:
+                # Save emails to the new file
+                with open(file_path, 'w') as f:
                     for email in all_emails:
                         f.write(email + "\n")
 
