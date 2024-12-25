@@ -1,204 +1,111 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 import json
 import os
 
 
-class ModernTheme:
-    BG_COLOR = "#6EACDA"
-    FRAME_BG = "#6EACDA"
-    PRIMARY = "#000000"
-    SECONDARY = "#000000"
-    SUCCESS = "#6ab04c"
-    WARNING = "#f9ca24"
-    ERROR = "#eb4d4b"
-    INFO = "#30336b"
-    TEXT_PRIMARY = "#000000"
-    TEXT_SECONDARY = "#000000"
-    TEXT_LIGHT = "#000000"
-
-
-class EmailGenerator:
+class ModernEmailGenerator:
     def __init__(self, root):
         self.root = root
-        self.root.title("✉️ Modern Email Generator")
-        self.root.geometry("420x640")
+        self.root.title("📨 Modern Email Generator Pro")
+        self.root.geometry("600x800")
         self.root.resizable(False, False)
-        self.root.configure(bg=ModernTheme.BG_COLOR)
+
+        # Set theme
+        ctk.set_appearance_mode("System")  # Modes: System, Light, Dark
+        ctk.set_default_color_theme("blue")
+
         self.hosts = ["gmail.com", "yahoo.com", "hotmail.com"]
         self.load_hosts()
-        self.setup_styles()
+
+        # UI Setup
         self.setup_ui()
 
-    def setup_styles(self):
-        style = ttk.Style()
-
-        style.configure('Modern.TFrame', background=ModernTheme.BG_COLOR)
-        style.configure('Card.TFrame', background=ModernTheme.FRAME_BG,
-                        relief='raised', borderwidth=1)
-
-        style.configure('Modern.TLabelframe',
-                        background=ModernTheme.FRAME_BG,
-                        relief='solid',
-                        borderwidth=1)
-        style.configure('Modern.TLabelframe.Label',
-                        background=ModernTheme.FRAME_BG,
-                        foreground=ModernTheme.PRIMARY,
-                        font=('Segoe UI', 11, 'bold'))
-
-        style.configure('Primary.TButton',
-                        background=ModernTheme.PRIMARY,
-                        foreground=ModernTheme.TEXT_LIGHT,
-                        font=('Segoe UI', 10),
-                        padding=10)
-        style.configure('Secondary.TButton',
-                        background=ModernTheme.SECONDARY,
-                        font=('Segoe UI', 9),
-                        padding=8)
-
-        style.configure('Header.TLabel',
-                        background=ModernTheme.FRAME_BG,
-                        foreground=ModernTheme.TEXT_PRIMARY,
-                        font=('Segoe UI', 10, 'bold'))
-        style.configure('Info.TLabel',
-                        background=ModernTheme.FRAME_BG,
-                        foreground=ModernTheme.TEXT_SECONDARY,
-                        font=('Segoe UI', 9))
-
-        style.configure('Modern.TEntry',
-                        fieldbackground=ModernTheme.BG_COLOR,
-                        padding=5)
-
     def setup_ui(self):
-        main_frame = ttk.Frame(self.root, style='Modern.TFrame')
-        main_frame.pack(expand=True, fill='both', padx=20, pady=20)
+        # Main Frame
+        self.main_frame = ctk.CTkFrame(self.root, corner_radius=15)
+        self.main_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
-        # Title section
-        title_frame = ttk.Frame(main_frame, style='Card.TFrame')
-        title_frame.pack(fill='x', pady=(0, 20), ipady=10)
+        # Title Section
+        self.title_label = ctk.CTkLabel(self.main_frame, text="Email Generator Pro",
+                                        font=("Segoe UI", 24, "bold"))
+        self.title_label.pack(pady=10)
 
-        title_label = ttk.Label(title_frame,
-                                text="Email Generator Pro",
-                                font=('Segoe UI', 16, 'bold'),
-                                foreground=ModernTheme.PRIMARY,
-                                background=ModernTheme.FRAME_BG)
-        title_label.pack()
+        self.subtitle_label = ctk.CTkLabel(self.main_frame,
+                                           text="Generate professional email combinations easily",
+                                           font=("Segoe UI", 14))
+        self.subtitle_label.pack(pady=5)
 
-        subtitle_label = ttk.Label(title_frame,
-                                   text="Generate professional email combinations easily",
-                                   font=('Segoe UI', 9),
-                                   foreground=ModernTheme.TEXT_SECONDARY,
-                                   background=ModernTheme.FRAME_BG)
-        subtitle_label.pack()
+        # File Operations
+        self.file_frame = ctk.CTkFrame(self.main_frame, corner_radius=10)
+        self.file_frame.pack(pady=20, fill="x")
 
-        # File section
-        file_frame = ttk.LabelFrame(main_frame, text=" 📁 File Operations ", style='Modern.TLabelframe')
-        file_frame.pack(fill='x', pady=(0, 20), ipady=10)
+        self.file_label = ctk.CTkLabel(self.file_frame,
+                                       text="Upload a text file with names (first_name:last_name)",
+                                       font=("Segoe UI", 12))
+        self.file_label.pack(pady=10)
 
-        file_info = ttk.Label(file_frame,
-                              text="Upload a text file with names in format: first_name:last_name",
-                              style='Info.TLabel')
-        file_info.pack(pady=(5, 0))
+        self.upload_button = ctk.CTkButton(self.file_frame, text="Upload Names File",
+                                           command=self.upload_file, width=200)
+        self.upload_button.pack(pady=5)
 
-        button_frame = ttk.Frame(file_frame, style='Modern.TFrame')
-        button_frame.pack(pady=10)
+        self.generate_button = ctk.CTkButton(self.file_frame, text="Generate Emails",
+                                             command=self.generate_emails, width=200)
+        self.generate_button.pack(pady=5)
 
-        ttk.Button(button_frame, text="Upload Names File",
-                   style='Primary.TButton', command=self.upload_file).pack(side='left', padx=5)
-        ttk.Button(button_frame, text="Generate Emails",
-                   style='Primary.TButton', command=self.generate_emails).pack(side='left', padx=5)
+        # Host Management
+        self.host_frame = ctk.CTkFrame(self.main_frame, corner_radius=10)
+        self.host_frame.pack(pady=20, fill="x")
 
-        # Host Management section
-        host_frame = ttk.LabelFrame(main_frame, text=" 🔧 Host Management ", style='Modern.TLabelframe')
-        host_frame.pack(fill='x', pady=(0, 20), ipady=10)
+        self.host_label = ctk.CTkLabel(self.host_frame, text="Manage Hosts", font=("Segoe UI", 14, "bold"))
+        self.host_label.pack(pady=10)
 
-        # Add host section
-        add_frame = ttk.Frame(host_frame, style='Modern.TFrame')
-        add_frame.pack(fill='x', padx=15, pady=10)
+        self.host_entry = ctk.CTkEntry(self.host_frame, placeholder_text="Add New Host")
+        self.host_entry.pack(pady=5)
 
-        ttk.Label(add_frame, text="Add New Host:",
-                  style='Header.TLabel').pack(side='left', padx=(0, 10))
+        self.add_host_button = ctk.CTkButton(self.host_frame, text="Add Host",
+                                             command=self.add_host, width=150)
+        self.add_host_button.pack(pady=5)
 
-        self.host_var = tk.StringVar()
-        ttk.Entry(add_frame, textvariable=self.host_var,
-                  style='Modern.TEntry', width=30).pack(side='left', padx=(0, 10))
+        self.hosts_dropdown = ctk.CTkOptionMenu(self.host_frame, values=self.hosts)
+        self.hosts_dropdown.pack(pady=5)
 
-        ttk.Button(add_frame, text="Add Host",
-                   style='Secondary.TButton', command=self.add_host).pack(side='left')
+        self.delete_host_button = ctk.CTkButton(self.host_frame, text="Delete Selected Host",
+                                                command=self.delete_host, width=200)
+        self.delete_host_button.pack(pady=5)
 
-        # Host selection section
-        select_frame = ttk.Frame(host_frame, style='Modern.TFrame')
-        select_frame.pack(fill='x', padx=15, pady=10)
+        # Status Section
+        self.status_frame = ctk.CTkFrame(self.main_frame, corner_radius=10)
+        self.status_frame.pack(pady=20, fill="x")
 
-        ttk.Label(select_frame, text="Select Host:",
-                  style='Header.TLabel').pack(side='left', padx=(0, 10))
-
-        self.selected_host_var = tk.StringVar()
-        self.host_dropdown = ttk.Combobox(select_frame, textvariable=self.selected_host_var,
-                                          width=27, state='readonly')
-        self.host_dropdown['values'] = self.hosts
-        self.host_dropdown.pack(side='left')
-
-        # Edit section
-        edit_frame = ttk.Frame(host_frame, style='Modern.TFrame')
-        edit_frame.pack(fill='x', padx=15, pady=10)
-
-        ttk.Label(edit_frame, text="New Host Name:",
-                  style='Header.TLabel').pack(side='left', padx=(0, 10))
-
-        self.edit_host_var = tk.StringVar()
-        ttk.Entry(edit_frame, textvariable=self.edit_host_var,
-                  style='Modern.TEntry', width=30).pack(side='left')
-
-        # Action buttons
-        button_frame = ttk.Frame(host_frame, style='Modern.TFrame')
-        button_frame.pack(pady=10)
-
-        buttons = [
-            ("🗑️ Delete Host", self.delete_host),
-            ("✏️ Edit Host", self.edit_host),
-            ("📋 Show All Hosts", self.show_hosts)
-        ]
-
-        for text, command in buttons:
-            ttk.Button(button_frame, text=text,
-                       style='Secondary.TButton',
-                       command=command).pack(side='left', padx=5)
-
-        # Status section
-        status_frame = ttk.LabelFrame(main_frame, text=" 📊 Status ", style='Modern.TLabelframe')
-        status_frame.pack(fill='x', pady=(0, 20), ipady=10)
-
-        self.status_var = tk.StringVar(value="Ready to start...")
-        self.status_label = ttk.Label(status_frame, textvariable=self.status_var,
-                                      style='Info.TLabel', wraplength=500)
+        self.status_label = ctk.CTkLabel(self.status_frame, text="Ready to start...",
+                                         font=("Segoe UI", 12))
         self.status_label.pack(pady=10)
 
     def update_status(self, message, status_type="info"):
         color_map = {
-            "success": ModernTheme.SUCCESS,
-            "error": ModernTheme.ERROR,
-            "warning": ModernTheme.WARNING,
-            "info": ModernTheme.TEXT_SECONDARY
+            "success": "green",
+            "error": "red",
+            "warning": "orange",
+            "info": "blue"
         }
-        self.status_label.configure(foreground=color_map.get(status_type, ModernTheme.TEXT_SECONDARY))
-        self.status_var.set(message)
+        self.status_label.configure(text=message, text_color=color_map.get(status_type, "blue"))
 
     def load_hosts(self):
         try:
             if os.path.exists('hosts.json'):
                 with open('hosts.json', 'r') as f:
                     self.hosts = json.load(f)
-        except Exception as e:
+        except Exception:
             self.hosts = ["gmail.com", "yahoo.com", "hotmail.com"]
-            self.update_status("⚠️ Failed to load hosts, using defaults", "warning")
+            self.update_status("Failed to load hosts. Using defaults.", "warning")
 
     def save_hosts(self):
         try:
             with open('hosts.json', 'w') as f:
                 json.dump(self.hosts, f)
         except Exception as e:
-            self.update_status(f"❌ Error saving hosts: {str(e)}", "error")
+            self.update_status(f"Error saving hosts: {str(e)}", "error")
 
     def upload_file(self):
         self.filename = filedialog.askopenfilename(
@@ -206,7 +113,7 @@ class EmailGenerator:
             filetypes=[("Text Files", "*.txt")]
         )
         if self.filename:
-            self.update_status(f"✅ File loaded: {os.path.basename(self.filename)}", "success")
+            self.update_status(f"File loaded: {os.path.basename(self.filename)}", "success")
 
     def generate_email_combinations(self, first_name, last_name, host):
         return [
@@ -219,7 +126,7 @@ class EmailGenerator:
 
     def generate_emails(self):
         if not hasattr(self, 'filename'):
-            self.update_status("⚠️ Please upload a names file first", "warning")
+            self.update_status("Please upload a names file first.", "warning")
             return
 
         try:
@@ -227,7 +134,7 @@ class EmailGenerator:
                 names = f.readlines()
 
             if not names:
-                self.update_status("⚠️ The file is empty", "warning")
+                self.update_status("The file is empty.", "warning")
                 return
 
             all_emails = []
@@ -249,111 +156,50 @@ class EmailGenerator:
                         first_name.lower(), last_name.lower(), host))
 
             if invalid_lines:
-                self.update_status(
-                    f"⚠️ Warning: Invalid format in lines: {', '.join(invalid_lines)}",
-                    "warning"
-                )
+                self.update_status(f"Warning: Invalid format in lines: {', '.join(invalid_lines)}", "warning")
 
-            if all_emails:
-                save_path = filedialog.asksaveasfilename(
-                    title="Save Generated Emails",
-                    defaultextension=".txt",
-                    filetypes=[("Text Files", "*.txt")]
-                )
+            output_file = "generated_emails.txt"
+            with open(output_file, 'w') as f:
+                f.write("\n".join(all_emails))
 
-                if save_path:
-                    with open(save_path, 'w') as f:
-                        f.write('\n'.join(all_emails))
-                    self.update_status(
-                        f"✅ Generated {len(all_emails)} emails and saved to: {os.path.basename(save_path)}",
-                        "success"
-                    )
-            else:
-                self.update_status("❌ No valid names found to generate emails", "error")
+            self.update_status(f"Generated {len(all_emails)} emails. Saved to {output_file}.", "success")
 
         except Exception as e:
-            self.update_status(f"❌ Error: {str(e)}", "error")
-
-    def update_host_dropdown(self):
-        self.host_dropdown['values'] = self.hosts
-        if self.hosts:
-            self.host_dropdown.set(self.hosts[0])
+            self.update_status(f"Error: {str(e)}", "error")
 
     def add_host(self):
-        host = self.host_var.get().strip()
-        if not host:
-            self.update_status("⚠️ Please enter a host name", "warning")
-            return
-
-        if host in self.hosts:
-            self.update_status("❌ This host already exists", "error")
-            return
-
-        if '@' in host or ' ' in host:
-            self.update_status("❌ Invalid host format", "error")
-            return
-
-        self.hosts.append(host)
-        self.save_hosts()
-        self.update_host_dropdown()
-        self.update_status(f"✅ Added host: {host}", "success")
-        self.host_var.set("")
-
-    def delete_host(self):
-        host = self.selected_host_var.get()
-        if not host:
-            self.update_status("⚠️ Please select a host to delete", "warning")
-            return
-
-        if len(self.hosts) <= 1:
-            self.update_status("❌ Cannot delete the last host", "error")
-            return
-
-        self.hosts.remove(host)
-        self.save_hosts()
-        self.update_host_dropdown()
-        self.update_status(f"✅ Deleted host: {host}", "success")
-
-    def edit_host(self):
-        old_host = self.selected_host_var.get()
-        new_host = self.edit_host_var.get().strip()
-
-        if not old_host:
-            self.update_status("⚠️ Please select a host to edit", "warning")
-            return
-
+        new_host = self.host_entry.get().strip()
         if not new_host:
-            self.update_status("⚠️ Please enter a new host name", "warning")
-            return
-
-        if '@' in new_host or ' ' in new_host:
-            self.update_status("❌ Invalid host format", "error")
+            self.update_status("Please enter a host name.", "warning")
             return
 
         if new_host in self.hosts:
-            self.update_status("❌ This host already exists", "error")
+            self.update_status("This host already exists.", "error")
             return
 
-        index = self.hosts.index(old_host)
-        self.hosts[index] = new_host
+        self.hosts.append(new_host)
         self.save_hosts()
-        self.update_host_dropdown()
-        self.update_status(f"✅ Host updated: {old_host} → {new_host}", "success")
-        self.edit_host_var.set("")
+        self.hosts_dropdown.configure(values=self.hosts)
+        self.update_status(f"Added host: {new_host}", "success")
+        self.host_entry.delete(0, ctk.END)
 
-    def show_hosts(self):
-        if not self.hosts:
-            messagebox.showwarning("No Hosts", "No email hosts are currently configured.")
+    def delete_host(self):
+        selected_host = self.hosts_dropdown.get()
+        if selected_host not in self.hosts:
+            self.update_status("Please select a valid host to delete.", "warning")
             return
 
-        hosts_text = "\n".join([f"• {host}" for host in self.hosts])
-        messagebox.showinfo(
-            "Current Hosts",
-            f"Available email hosts:\n\n{hosts_text}"
-        )
+        self.hosts.remove(selected_host)
+        self.save_hosts()
+        self.hosts_dropdown.configure(values=self.hosts)
+        self.update_status(f"Deleted host: {selected_host}", "success")
+
+
+def main():
+    root = ctk.CTk()
+    app = ModernEmailGenerator(root)
+    root.mainloop()
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = EmailGenerator(root)
-    root.mainloop()
+    main()
