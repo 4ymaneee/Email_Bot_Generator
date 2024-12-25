@@ -8,7 +8,7 @@ class ModernEmailGenerator:
     def __init__(self, root):
         self.root = root
         self.root.title("📨 Modern Email Generator Pro")
-        self.root.geometry("600x800")
+        self.root.geometry("400x650")
         self.root.resizable(False, False)
 
         # Set theme
