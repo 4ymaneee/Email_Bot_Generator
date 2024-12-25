@@ -1,6 +1,6 @@
 # 📨 Modern Email Generator Pro
 
-<img src="img.png" alt="Modern Email Generator Pro" width="400" />
+<img src="img.png" alt="Modern Email Generator Pro" width="300" />
 
 **Modern Email Generator Pro** is a Python-based desktop application that enables users to easily generate professional email combinations from a list of names. This tool supports multiple email domains, allows file uploads for name processing, and offers a sleek, modern interface powered by **CustomTkinter**. It also supports multiple languages (English and French), making it both versatile and user-friendly.
 
