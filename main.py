@@ -40,10 +40,11 @@ class ModernEmailGenerator:
                 "host_exists": "This host already exists.",
                 "added_host": "Added host: {0}",
                 "deleted_host": "Deleted host: {0}",
+                "copyright": "Created by Aymane Elm. All rights reserved. © 2024"
             },
             "fr": {
                 "title": "Générateur d'email moderne",
-                "subtitle": "Générez facilement des combinaisons d'emails professionnels",
+                "subtitle": "Générez des emails professionnels facilement",  # Shortened subtitle
                 "file_label": "Téléchargez un fichier texte avec les noms (prénom:nom)",
                 "upload_button": "Télécharger le fichier des noms",
                 "generate_button": "Générer les emails",
@@ -61,6 +62,7 @@ class ModernEmailGenerator:
                 "host_exists": "Cet hôte existe déjà.",
                 "added_host": "Hôte ajouté : {0}",
                 "deleted_host": "Hôte supprimé : {0}",
+                "copyright": "Créé par Aymane Elm. Tous droits réservés. © 2024"
             }
         }
         self.current_language = "en"
@@ -81,7 +83,7 @@ class ModernEmailGenerator:
         self.title_label = ctk.CTkLabel(self.main_frame, text=self.translate("title"), font=("Segoe UI", 24, "bold"))
         self.title_label.pack(pady=10)
 
-        self.subtitle_label = ctk.CTkLabel(self.main_frame, text=self.translate("subtitle"), font=("Segoe UI", 14))
+        self.subtitle_label = ctk.CTkLabel(self.main_frame, text=self.translate("subtitle"), font=("Segoe UI", 12))
         self.subtitle_label.pack(pady=5)
 
         # File Operations
@@ -125,18 +127,22 @@ class ModernEmailGenerator:
         self.status_frame = ctk.CTkFrame(self.main_frame, corner_radius=10)
         self.status_frame.pack(pady=20, fill="x")
 
-        self.status_label = ctk.CTkLabel(self.status_frame, text=self.translate("status_label"), font=("Segoe UI", 12))
+        self.status_label = ctk.CTkLabel(self.status_frame, text=self.translate("status_label"), font=("Segoe UI", 12, "bold"))
         self.status_label.pack(pady=10)
 
-        # Language Selection Dropdown at the bottom
-        self.language_button = ctk.CTkButton(self.root, text="Choose Language", command=self.toggle_language_dropdown,
-                                             width=120)
-        self.language_button.place(relx=0.5, rely=0.95, anchor="center")
+        # Create the language dropdown and set the width and height
+        self.language_dropdown = ctk.CTkOptionMenu(self.root,
+                                                   values=["en", "fr"],
+                                                   command=self.change_language,
+                                                   width=60, height=30)  # Adjust width and height
+        self.language_dropdown.set(self.current_language)
+        self.language_dropdown.place(relx=0.5, rely=0.93, anchor="center")  # Lower the dropdown a bit
 
-        # Language Selection Dropdown (hidden initially)
-        self.language_dropdown = ctk.CTkOptionMenu(self.root, values=["en", "fr"], command=self.change_language)
-        self.language_dropdown.place(relx=0.5, rely=0.9, anchor="center")
-        self.language_dropdown.pack_forget()  # Initially hidden
+        # Add a credit label with bigger font and some space
+        self.credit_label = ctk.CTkLabel(self.root,
+                                         text="   Created by Aymane Elm. All rights reserved. © 2024   ",
+                                         font=("Segoe UI", 14, "bold"))  # Increase font size here
+        self.credit_label.place(relx=0.5, rely=0.98, anchor="center")  # Position credit label at the bottom
 
     def update_status(self, message, status_type="info"):
         color_map = {
@@ -209,67 +215,53 @@ class ModernEmailGenerator:
                     continue
 
                 for host in self.hosts:
-                    all_emails.extend(self.generate_email_combinations(
-                        first_name.lower(), last_name.lower(), host))
+                    all_emails.extend(self.generate_email_combinations(first_name, last_name, host))
 
             if invalid_lines:
-                self.update_status(self.translate("invalid_format") + ", ".join(invalid_lines), "warning")
+                self.update_status(self.translate("invalid_format") + ",".join(invalid_lines), "warning")
+            else:
+                self.update_status(self.translate("generated_emails").format(len(all_emails), "emails.txt"), "success")
 
-            output_file = "generated_emails.txt"
-            with open(output_file, 'w') as f:
-                f.write("\n".join(all_emails))
-
-            self.update_status(self.translate("generated_emails").format(len(all_emails), output_file), "success")
+                # Save emails to file
+                with open('emails.txt', 'w') as f:
+                    for email in all_emails:
+                        f.write(email + "\n")
 
         except Exception as e:
-            self.update_status(f"Error: {str(e)}", "error")
+            self.update_status(str(e), "error")
 
     def add_host(self):
-        new_host = self.host_entry.get().strip()
-        if not new_host:
+        host = self.host_entry.get().strip()
+        if not host:
             self.update_status(self.translate("please_enter_host"), "warning")
             return
-
-        if new_host in self.hosts:
-            self.update_status(self.translate("host_exists"), "error")
+        if host in self.hosts:
+            self.update_status(self.translate("host_exists"), "warning")
             return
-
-        self.hosts.append(new_host)
-        self.save_hosts()
+        self.hosts.append(host)
         self.hosts_dropdown.configure(values=self.hosts)
-        self.update_status(self.translate("added_host").format(new_host), "success")
-        self.host_entry.delete(0, ctk.END)
+        self.save_hosts()
+        self.update_status(self.translate("added_host").format(host), "success")
 
     def delete_host(self):
         selected_host = self.hosts_dropdown.get()
-        if selected_host not in self.hosts:
-            self.update_status(self.translate("invalid_file"), "warning")
-            return
+        if selected_host:
+            self.hosts.remove(selected_host)
+            self.hosts_dropdown.configure(values=self.hosts)
+            self.save_hosts()
+            self.update_status(self.translate("deleted_host").format(selected_host), "success")
+        else:
+            self.update_status(self.translate("please_enter_host"), "warning")
 
-        self.hosts.remove(selected_host)
-        self.save_hosts()
-        self.hosts_dropdown.configure(values=self.hosts)
-        self.update_status(self.translate("deleted_host").format(selected_host), "success")
+    def change_language(self, value):
+        self.current_language = value
+        self.setup_ui()
 
     def translate(self, key):
         return self.languages[self.current_language].get(key, key)
 
-    def toggle_language_dropdown(self):
-        if self.language_dropdown.winfo_ismapped():
-            self.language_dropdown.pack_forget()
-        else:
-            self.language_dropdown.pack(pady=10)
 
-    def change_language(self, value):
-        self.current_language = value
-        self.setup_ui()  # Reinitialize the UI with the new language
-
-
-def main():
+if __name__ == "__main__":
     root = ctk.CTk()
     app = ModernEmailGenerator(root)
     root.mainloop()
-
-
-if __name__ == "__main__":
-    main()
