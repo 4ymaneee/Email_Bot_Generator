@@ -61,7 +61,7 @@ python email_generator.py
 ```
 
 - **Upload a Names File**:
-- Upload a .txt file formatted as first_name:last_name. For example:
+  Upload a .txt file formatted as first_name:last_name. For example:
 
 ```bash
 John:Doe
@@ -69,13 +69,13 @@ Alice:Smith
 ```
 
 - **Generate Emails**:
-- The tool will automatically generate multiple email combinations (e.g., john.doe@gmail.com, doe.john@gmail.com, etc.) based on the names and selected hosts.
+  The tool will automatically generate multiple email combinations (e.g., john.doe@gmail.com, doe.john@gmail.com, etc.) based on the names and selected hosts.
 
 - **Manage Hosts**:
-- Add or remove email hosts like company.com, service.org, etc., directly within the app.
+  Add or remove email hosts like company.com, service.org, etc., directly within the app.
 
 - **Access Output**:
--The generated emails will be saved in the folder Emails Generated, with sequentially numbered filenames (e.g., Emails_Combination_1.txt).
+  The generated emails will be saved in the folder Emails Generated, with sequentially numbered filenames (e.g., Emails_Combination_1.txt).
 
 ## Credits ✨
 Created by Aymane Elm. All rights reserved. © 2024.
