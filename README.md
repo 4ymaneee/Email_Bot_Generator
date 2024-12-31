@@ -48,3 +48,39 @@ You can install the required Python dependencies by running the following comman
 
 ```bash
 pip install customtkinter
+```
+
+## Usage 📝
+
+- **Run the Program**:
+
+To launch the application, simply run the Python script:
+
+```bash
+python email_generator.py
+```
+
+- **Upload a Names File**:
+
+Upload a .txt file formatted as first_name:last_name. For example:
+
+```bash
+John:Doe
+Alice:Smith
+```
+
+- **Generate Emails**:
+
+The tool will automatically generate multiple email combinations (e.g., john.doe@gmail.com, doe.john@gmail.com, etc.) based on the names and selected hosts.
+
+- **Manage Hosts**:
+
+Add or remove email hosts like company.com, service.org, etc., directly within the app.
+
+- **Access Output**:
+
+The generated emails will be saved in the folder Emails Generated, with sequentially numbered filenames (e.g., Emails_Combination_1.txt).
+
+## Credits ✨
+
+Created by Aymane Elm. All rights reserved. © 2024.
