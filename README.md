@@ -53,7 +53,7 @@ pip install customtkinter
 ## Usage 📝
 
 - **Run the Program**:
-To launch the application, simply run the Python script:
+  To launch the application, simply run the Python script:
 
 ```bash
 python email_generator.py
@@ -68,10 +68,10 @@ Alice:Smith
 ```
 
 - **Generate Emails**:
-The tool will automatically generate multiple email combinations (e.g., john.doe@gmail.com, doe.john@gmail.com, etc.) based on the names and selected hosts.
+  The tool will automatically generate multiple email combinations (e.g., john.doe@gmail.com, doe.john@gmail.com, etc.) based on the names and selected hosts.
 
 - **Access Output**:
-The generated emails will be saved in the folder Emails Generated, with sequentially numbered filenames (e.g., Emails_Combination_1.txt).
+  The generated emails will be saved in the folder Emails Generated, with sequentially numbered filenames (e.g., Emails_Combination_1.txt).
 
 ## Credits ✨
 Created by Aymane Elm. All rights reserved. © 2024.
