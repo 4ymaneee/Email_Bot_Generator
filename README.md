@@ -54,13 +54,14 @@ pip install customtkinter
 
 - **Run the Program**:
 
-To launch the application, simply run the Python script:
+  To launch the application, simply run the Python script:
 
 ```bash
 python email_generator.py
 ```
 
 - **Upload a Names File**:
+
   Upload a .txt file formatted as first_name:last_name. For example:
 
 ```bash
@@ -69,9 +70,11 @@ Alice:Smith
 ```
 
 - **Generate Emails**:
+
   The tool will automatically generate multiple email combinations (e.g., john.doe@gmail.com, doe.john@gmail.com, etc.) based on the names and selected hosts.
 
 - **Manage Hosts**:
+
   Add or remove email hosts like company.com, service.org, etc., directly within the app.
 
 - **Access Output**:
